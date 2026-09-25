@@ -274,6 +274,9 @@ function Transactions() {
   const [saving, setSaving] =
     useState(false);
 
+  const [categoryOpen, setCategoryOpen] =
+    useState(false);
+
 
   /* =========================
      FILTERS
