@@ -15,6 +15,8 @@ import {
   LogOut,
   Sun,
   Moon,
+  Menu,
+  X,
 } from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
@@ -24,6 +26,16 @@ function DashboardLayout() {
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // =====================================================
+  // MOBILE SIDEBAR
+  // =====================================================
+
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  const closeMobileSidebar = () => {
+    setMobileSidebarOpen(false);
+  };
 
   // =====================================================
   // THEME
@@ -492,7 +504,6 @@ function DashboardLayout() {
         dark:text-slate-300
       "
     >
-
       {/* =================================================
           BACKGROUND
       ================================================= */}
@@ -534,7 +545,7 @@ function DashboardLayout() {
           border-b
           border-slate-200/80
           bg-white/95
-          px-8
+          px-4
           shadow-[0_4px_18px_rgba(25,20,45,0.045)]
 
           backdrop-blur-2xl
@@ -545,20 +556,84 @@ function DashboardLayout() {
           dark:border-white/[0.08]
           dark:bg-[#0b0b10]/95
           dark:shadow-[0_4px_20px_rgba(0,0,0,0.20)]
+
+          sm:px-8
         "
       >
+        {/* MOBILE MENU BUTTON */}
+
+        <button
+          type="button"
+          onClick={() =>
+            setMobileSidebarOpen(
+              (current) => !current
+            )
+          }
+          aria-label={
+            mobileSidebarOpen
+              ? "Close navigation"
+              : "Open navigation"
+          }
+          aria-expanded={mobileSidebarOpen}
+          className="
+            absolute
+            left-4
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-2xl
+            border-2
+            border-slate-200
+            bg-white
+            text-slate-600
+            shadow-sm
+            transition-all
+            duration-200
+
+            hover:border-purple-200
+            hover:bg-purple-50
+            hover:text-purple-600
+
+            dark:border-white/10
+            dark:bg-white/[0.04]
+            dark:text-slate-300
+
+            dark:hover:border-purple-400/30
+            dark:hover:bg-purple-500/10
+            dark:hover:text-purple-300
+
+            sm:hidden
+          "
+        >
+          {mobileSidebarOpen ? (
+            <X
+              size={21}
+              strokeWidth={2.2}
+            />
+          ) : (
+            <Menu
+              size={21}
+              strokeWidth={2.2}
+            />
+          )}
+        </button>
 
         {/* CENTER BRAND */}
 
         <button
           type="button"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => {
+            closeMobileSidebar();
+            navigate("/dashboard");
+          }}
           aria-label="Go to dashboard"
           className="
             apna-khata-brand
 
             cursor-pointer
-            text-[42px]
+            text-[30px]
             font-black
             leading-none
             tracking-[-0.055em]
@@ -570,6 +645,8 @@ function DashboardLayout() {
             hover:scale-[1.025]
 
             dark:text-white
+
+            sm:text-[42px]
           "
         >
           Apna Khata
@@ -580,14 +657,16 @@ function DashboardLayout() {
         <div
           className="
             absolute
-            right-8
+            right-4
 
             flex
             items-center
-            gap-3.5
+            gap-2
+
+            sm:right-8
+            sm:gap-3.5
           "
         >
-
           {/* THEME TOGGLE */}
 
           <button
@@ -596,8 +675,8 @@ function DashboardLayout() {
             aria-label="Toggle theme"
             className="
               flex
-              h-11
-              w-11
+              h-10
+              w-10
               items-center
               justify-center
 
@@ -625,16 +704,19 @@ function DashboardLayout() {
               dark:hover:border-purple-400/30
               dark:hover:bg-purple-500/10
               dark:hover:text-purple-300
+
+              sm:h-11
+              sm:w-11
             "
           >
             {theme === "light" ? (
               <Moon
-                size={19}
+                size={18}
                 strokeWidth={2}
               />
             ) : (
               <Sun
-                size={19}
+                size={18}
                 strokeWidth={2}
               />
             )}
@@ -644,7 +726,10 @@ function DashboardLayout() {
 
           <button
             type="button"
-            onClick={() => navigate("/settings")}
+            onClick={() => {
+              closeMobileSidebar();
+              navigate("/settings");
+            }}
             aria-label="Open settings"
             className="
               flex
@@ -655,7 +740,7 @@ function DashboardLayout() {
               border
               border-transparent
 
-              px-2.5
+              px-1.5
               py-1.5
 
               text-left
@@ -668,9 +753,10 @@ function DashboardLayout() {
 
               dark:hover:border-white/10
               dark:hover:bg-white/[0.04]
+
+              sm:px-2.5
             "
           >
-
             {/* AVATAR */}
 
             <div
@@ -678,6 +764,7 @@ function DashboardLayout() {
                 flex
                 h-10
                 w-10
+                shrink-0
                 items-center
                 justify-center
 
@@ -722,19 +809,41 @@ function DashboardLayout() {
                 {user?.name || "User"}
               </div>
             </div>
-
           </button>
-
         </div>
       </header>
 
       {/* =================================================
+          MOBILE SIDEBAR BACKDROP
+      ================================================= */}
+
+      {mobileSidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={closeMobileSidebar}
+          className="
+            fixed
+            inset-0
+            z-40
+            bg-slate-950/20
+            backdrop-blur-[2px]
+
+            dark:bg-black/45
+
+            sm:hidden
+          "
+        />
+      )}
+
+      {/* =================================================
           SIDEBAR
-          BELOW TOPBAR
+          DESKTOP = PERMANENT
+          MOBILE = DRAWER
       ================================================= */}
 
       <aside
-        className="
+        className={`
           fixed
           left-0
           top-[82px]
@@ -742,7 +851,7 @@ function DashboardLayout() {
 
           flex
           h-[calc(100vh-82px)]
-          w-[235px]
+          w-[280px]
           flex-col
 
           border-r
@@ -752,27 +861,91 @@ function DashboardLayout() {
           px-4
           py-5
 
-          shadow-[8px_0_30px_rgba(25,20,45,0.035)]
+          shadow-[8px_0_30px_rgba(25,20,45,0.08)]
 
           backdrop-blur-2xl
 
-          transition-all
+          transition-transform
           duration-300
+          ease-out
 
           dark:border-white/[0.08]
           dark:bg-[#111117]/95
-          dark:shadow-[8px_0_30px_rgba(0,0,0,0.25)]
-        "
+          dark:shadow-[8px_0_30px_rgba(0,0,0,0.35)]
+
+          sm:w-[235px]
+          sm:translate-x-0
+          sm:shadow-[8px_0_30px_rgba(25,20,45,0.035)]
+
+          ${
+            mobileSidebarOpen
+              ? "translate-x-0"
+              : "-translate-x-full"
+          }
+        `}
       >
+        {/* MOBILE SIDEBAR HEADER */}
+
+        <div
+          className="
+            mb-3
+            flex
+            items-center
+            justify-between
+
+            sm:hidden
+          "
+        >
+          <span
+            className="
+              text-xs
+              font-black
+              uppercase
+              tracking-[0.18em]
+              text-slate-400
+
+              dark:text-slate-500
+            "
+          >
+            Navigation
+          </span>
+
+          <button
+            type="button"
+            onClick={closeMobileSidebar}
+            aria-label="Close navigation"
+            className="
+              flex
+              h-9
+              w-9
+              items-center
+              justify-center
+              rounded-xl
+              text-slate-500
+              transition-colors
+
+              hover:bg-slate-100
+              hover:text-slate-900
+
+              dark:hover:bg-white/[0.05]
+              dark:hover:text-white
+            "
+          >
+            <X
+              size={19}
+              strokeWidth={2}
+            />
+          </button>
+        </div>
 
         {/* =================================================
             NAVIGATION
         ================================================= */}
 
-        <nav className="flex-1 space-y-1.5">
-
+        <nav className="flex-1 space-y-1.5 overflow-y-auto">
           <NavLink
             to="/dashboard"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <LayoutDashboard
@@ -784,6 +957,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/transactions"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <Receipt
@@ -795,6 +969,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/budgets"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <WalletCards
@@ -806,6 +981,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/savings-goals"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <PiggyBank
@@ -817,6 +993,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/insights"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <Lightbulb
@@ -828,6 +1005,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/recurring-transactions"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <Repeat
@@ -839,6 +1017,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/notifications"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <Bell
@@ -884,6 +1063,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/gamification"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <Trophy
@@ -895,6 +1075,7 @@ function DashboardLayout() {
 
           <NavLink
             to="/money-owed"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <WalletCards
@@ -903,7 +1084,6 @@ function DashboardLayout() {
             />
             <span>Money Owed</span>
           </NavLink>
-
         </nav>
 
         {/* =================================================
@@ -923,9 +1103,9 @@ function DashboardLayout() {
             dark:border-white/[0.08]
           "
         >
-
           <NavLink
             to="/settings"
+            onClick={closeMobileSidebar}
             className={navItemClass}
           >
             <Settings
@@ -937,7 +1117,10 @@ function DashboardLayout() {
 
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={() => {
+              closeMobileSidebar();
+              handleLogout();
+            }}
             className="
               flex
               w-full
@@ -976,9 +1159,7 @@ function DashboardLayout() {
 
             <span>Logout</span>
           </button>
-
         </div>
-
       </aside>
 
       {/* =================================================
@@ -992,8 +1173,10 @@ function DashboardLayout() {
 
           min-h-screen
 
-          pl-[235px]
+          pl-0
           pt-[82px]
+
+          sm:pl-[235px]
         "
       >
         <section
@@ -1001,11 +1184,14 @@ function DashboardLayout() {
             relative
             min-h-[calc(100vh-82px)]
 
-            px-8
-            py-8
+            px-4
+            py-6
 
             transition-colors
             duration-300
+
+            sm:px-8
+            sm:py-8
 
             md:px-10
             md:py-9
@@ -1014,7 +1200,6 @@ function DashboardLayout() {
           <Outlet />
         </section>
       </main>
-
     </div>
   );
 }
